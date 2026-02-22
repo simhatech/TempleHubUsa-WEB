@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'TempleHubUSA Web Application Infrastructure'
+
+Parameters:
+  DomainName:
+    Type: String
+    Default: templehubusa.com
+    Description: Domain name for the application
+
+Resources:
+  AmplifyApp:
+    Type: AWS::Amplify::App
+    Properties:
+      Name: templehubusa-web
+      Platform: WEB_COMPUTE
+      BuildSpec: |
+        version: 1
+        frontend:
+          phases:
+            preBuild:
+              commands:
+                - npm ci
+            build:
+              commands:
+                - npm run build
+          artifacts:
+            baseDirectory: .next
+            files:
+              - '**/*'
+          cache:
+            paths:
+              - node_modules/**/*
+              - .next/cache/**/*
+      EnvironmentVariables:
+        - Name: NEXT_PUBLIC_API_BASE_URL
+          Value: https://api.templehubusa.com/api
+      IAMServiceRole: !GetAtt AmplifyRole.Arn
+
+  AmplifyBranch:
+    Type: AWS::Amplify::Branch
+    Properties:
+      AppId: !GetAtt AmplifyApp.AppId
+      BranchName: main
+      EnableAutoBuild: true
+
+  AmplifyDomain:
+    Type: AWS::Amplify::Domain
+    Properties:
+      AppId: !GetAtt AmplifyApp.AppId
+      DomainName: !Ref DomainName
+      SubDomainSettings:
+        - Prefix: ''
+          BranchName: !GetAtt AmplifyBranch.BranchName
+        - Prefix: www
+          BranchName: !GetAtt AmplifyBranch.BranchName
+
+  AmplifyRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: amplify.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess-Amplify
+
+Outputs:
+  AmplifyAppId:
+    Value: !GetAtt AmplifyApp.AppId
+  AmplifyDefaultDomain:
+    Value: !GetAtt AmplifyApp.DefaultDomain
+  CustomDomain:
+    Value: !Ref DomainName

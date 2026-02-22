@@ -1,5 +1,5 @@
 export const APP_NAME = 'TempleHubUSA';
-export const API_BASE = '/backend';
+export const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'https://api.templehubusa.com/api';
 
 export const QUERY_KEYS = {
   temples: ['temples'] as const,
@@ -32,6 +32,10 @@ export const QUERY_KEYS = {
   adminEvents: (templeId?: number) => ['admin', 'events', { templeId }] as const,
   adminDonations: (templeId?: number) => ['admin', 'donations', { templeId }] as const,
   adminDonationStats: (templeId?: number) => ['admin', 'donations', 'stats', { templeId }] as const,
+  adminFinanceTransactions: (templeId?: number) =>
+    ['admin', 'finance', 'transactions', { templeId }] as const,
+  adminFinanceSummary: (templeId?: number) =>
+    ['admin', 'finance', 'summary', { templeId }] as const,
 } as const;
 
 export const ROLES = {
@@ -50,11 +54,10 @@ export const EVENT_CATEGORIES = [
 
 export const DONATION_PURPOSES = [
   'GENERAL',
-  'ANNADANAM',
   'CONSTRUCTION',
-  'UTILITIES',
-  'EDUCATION',
   'FESTIVAL',
+  'EDUCATION',
+  'FOOD',
 ] as const;
 
 export const PUJA_CATEGORIES = ['DAILY', 'SPECIAL', 'FESTIVAL', 'PERSONAL'] as const;

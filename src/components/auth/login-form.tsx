@@ -21,7 +21,11 @@ import {
 } from '@/components/ui/form';
 import { GoogleSignInButton } from '@/components/auth/google-sign-in-button';
 
-export function LoginForm() {
+interface LoginFormProps {
+  googleLoading?: boolean;
+}
+
+export function LoginForm({ googleLoading }: LoginFormProps) {
   const loginMutation = useLogin();
 
   const form = useForm<LoginFormValues>({
@@ -121,7 +125,7 @@ export function LoginForm() {
         </span>
       </div>
 
-      <GoogleSignInButton disabled={loginMutation.isPending} />
+      <GoogleSignInButton disabled={loginMutation.isPending} loading={googleLoading} />
 
       <p className="text-center text-sm text-muted-foreground">
         Don&apos;t have an account?{' '}

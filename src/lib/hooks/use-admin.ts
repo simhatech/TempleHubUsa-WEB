@@ -7,6 +7,7 @@ import { adminStaffApi } from '@/lib/api/admin/staff';
 import { adminEventsApi } from '@/lib/api/admin/events';
 import { adminDonationsApi } from '@/lib/api/admin/donations';
 import { adminNotificationsApi } from '@/lib/api/admin/notifications';
+import { adminFinancesApi } from '@/lib/api/admin/finances';
 import { QUERY_KEYS } from '@/lib/utils/constants';
 import { toast } from 'sonner';
 
@@ -203,6 +204,21 @@ export function useAdminDonationStats(templeId?: number) {
     queryKey: QUERY_KEYS.adminDonationStats(templeId),
     queryFn: () => adminDonationsApi.getStats(templeId!),
     enabled: !!templeId,
+  });
+}
+
+// Finances
+export function useAdminFinanceTransactions(templeId?: number) {
+  return useQuery({
+    queryKey: QUERY_KEYS.adminFinanceTransactions(templeId),
+    queryFn: () => adminFinancesApi.getTransactions(templeId),
+  });
+}
+
+export function useAdminFinanceSummary(templeId?: number) {
+  return useQuery({
+    queryKey: QUERY_KEYS.adminFinanceSummary(templeId),
+    queryFn: () => adminFinancesApi.getSummary(templeId),
   });
 }
 
